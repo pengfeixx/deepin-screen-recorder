@@ -200,11 +200,8 @@ TEST_F(MainWindowCov3Test, updateCameraWidgetPosSafe) { EXPECT_NO_FATAL_FAILURE(
 TEST_F(MainWindowCov3Test, updateMultiKeyBoardPosSafe){ EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowupdateMultiKeyBoardPos(*m_w)); }
 TEST_F(MainWindowCov3Test, handleOptionMenuShownSafe) { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowhandleOptionMenuShown(*m_w)); }
 
-TEST_F(MainWindowCov3Test, changeFunctionButtonSafe)
-{
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowchangeFunctionButton(*m_w, QStringLiteral("record")));
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowchangeFunctionButton(*m_w, QStringLiteral("shot")));
-}
+// P2-DEDUP: changeFunctionButton/changeKeyBoardShowEvent/changeMouseShowEvent/
+// changeShotToolEvent covered by MainWindowCov4Test::publicSlotsSweep (direct public calls)
 
 TEST_F(MainWindowCov3Test, showKeyBoardButtonsSafe)
 {
@@ -213,17 +210,7 @@ TEST_F(MainWindowCov3Test, showKeyBoardButtonsSafe)
     EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowshowKeyBoardButtons(*m_w, QStringLiteral("m")));
 }
 
-TEST_F(MainWindowCov3Test, changeKeyBoardShowEventSafe)
-{
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowchangeKeyBoardShowEvent(*m_w, true));
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowchangeKeyBoardShowEvent(*m_w, false));
-}
-
-TEST_F(MainWindowCov3Test, changeMouseShowEventSafe)
-{
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowchangeMouseShowEvent(*m_w, true));
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowchangeMouseShowEvent(*m_w, false));
-}
+// P2-DEDUP: changeMouseShowEvent covered by MainWindowCov4Test::publicSlotsSweep
 
 TEST_F(MainWindowCov3Test, changeCameraSelectEventSafe)
 {
@@ -231,14 +218,7 @@ TEST_F(MainWindowCov3Test, changeCameraSelectEventSafe)
     EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowchangeCameraSelectEvent(*m_w, false));
 }
 
-TEST_F(MainWindowCov3Test, changeShotToolEventSafe)
-{
-    for (const QString &s : {QStringLiteral("rectangle"), QStringLiteral("oval"),
-                             QStringLiteral("line"), QStringLiteral("arrow"),
-                             QStringLiteral("pen"), QStringLiteral("text")}) {
-        EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowchangeShotToolEvent(*m_w, s));
-    }
-}
+// P2-DEDUP: changeShotToolEvent covered by MainWindowCov4Test::publicSlotsSweep (rectangle/oval/line/arrow/text)
 
 TEST_F(MainWindowCov3Test, onAiAssistantSelectedSafe)
 {
@@ -419,11 +399,7 @@ TEST_F(MainWindowCov3Test, save2ClipboardSafe)
 // 第七组：工具栏拖动/范围限制与多屏
 // ============================================================================
 
-TEST_F(MainWindowCov3Test, moveToolBarsSafe)
-{
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowmoveToolBars(*m_w, QPoint(0, 0), QPoint(10, 10)));
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowmoveToolBars(*m_w, QPoint(100, 100), QPoint(-50, -50)));
-}
+// P2-DEDUP: moveToolBars/getTwoScreenIntersectPos covered by MainWindowCov4Test::publicSlotsSweep
 
 #if 0 // DISABLED-BLOCK bad member refs
 TEST_F(MainWindowCov3Test, limitToolbarScopeSafe)
@@ -436,11 +412,7 @@ TEST_F(MainWindowCov3Test, limitToolbarScopeSafe)
 }
 #endif // DISABLED-BLOCK
 
-TEST_F(MainWindowCov3Test, getTwoScreenIntersectPosSafe)
-{
-    QPoint r;
-    EXPECT_NO_FATAL_FAILURE(r = call_private_fun::MainWindowgetTwoScreenIntersectPos(*m_w, QPoint(100, 100)));
-}
+// P2-DEDUP: getTwoScreenIntersectPos covered by MainWindowCov4Test::publicSlotsSweep
 
 TEST_F(MainWindowCov3Test, pressPointGettersSafe)
 {
@@ -463,7 +435,7 @@ TEST_F(MainWindowCov3Test, parsePathArgumentSafe)
     EXPECT_NO_FATAL_FAILURE(r = call_private_fun::MainWindowparsePathArgument(*m_w, QStringLiteral("/tmp/dir"), dir, name, fmt));
 }
 
-TEST_F(MainWindowCov3Test, noNotifySafe) { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindownoNotify(*m_w)); }
+// P2-DEDUP: noNotify covered by MainWindowCov4Test::publicSlotsSweep
 
 #if 0 // DISABLED-BLOCK bad member refs
 TEST_F(MainWindowCov3Test, feedbackSlotsSafe)

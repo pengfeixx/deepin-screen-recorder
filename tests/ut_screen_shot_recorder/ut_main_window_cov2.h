@@ -281,24 +281,9 @@ TEST_F(MainWindowCov2Test, pinScreenshotsLockScreenSafe)   { EXPECT_NO_FATAL_FAI
 TEST_F(MainWindowCov2Test, scrollShotLockScreenSafe)  { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowscrollShotLockScreen(*m_w, false)); }
 TEST_F(MainWindowCov2Test, onOpenScrollShotHelpSafe)  { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonOpenScrollShotHelp(*m_w)); }
 TEST_F(MainWindowCov2Test, onAdjustCaptureAreaSafe)   { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonAdjustCaptureArea(*m_w)); }
-TEST_F(MainWindowCov2Test, onScrollShotCheckScrollTypeSafe) { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonScrollShotCheckScrollType(*m_w, 1)); }
-TEST_F(MainWindowCov2Test, onScrollShotCheckScrollTypeZeroSafe) { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonScrollShotCheckScrollType(*m_w, 0)); }
+// P2-DEDUP: onScrollShotCheckScrollType covered by MainWindowCov3Test (superset: 0,1,2)
 
-TEST_F(MainWindowCov2Test, scrollShotMouseClickSafe)
-{
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowscrollShotMouseClickEvent(*m_w, 10, 10));
-}
-
-TEST_F(MainWindowCov2Test, scrollShotMouseMoveSafe)
-{
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowscrollShotMouseMoveEvent(*m_w, 20, 20));
-}
-
-TEST_F(MainWindowCov2Test, scrollShotMouseScrollSafe)
-{
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowscrollShotMouseScrollEvent(*m_w, 0, 1, 50, 50));
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowscrollShotMouseScrollEvent(*m_w, 0, 0, 50, 50));
-}
+// P2-DEDUP: scrollShotMouse{Click,Move,Scroll} covered by MainWindowCov3Test (superset inputs)
 
 // ============================================================================
 // 第四组：treeland / 录制 / 资源初始化与释放
@@ -360,22 +345,14 @@ TEST_F(MainWindowCov2Test, applyPathSettingsSafe)
     EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowapplyPathSettings(*m_w, QStringLiteral("/tmp/x.png")));
 }
 
-TEST_F(MainWindowCov2Test, savePathSafe)
-{
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowsavePath(*m_w, QStringLiteral("/tmp")));
-}
-
-TEST_F(MainWindowCov2Test, setSavePathSafe)
-{
-    EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowsetSavePath(*m_w, QStringLiteral("/tmp/y")));
-}
+// P2-DEDUP: savePath/setSavePath covered by MainWindowCov4Test::publicSlotsSweep
 
 TEST_F(MainWindowCov2Test, startScreenshotFor3rdSafe)
 {
     EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowstartScreenshotFor3rd(*m_w, QStringLiteral("/tmp/z.png")));
 }
 
-TEST_F(MainWindowCov2Test, noNotifySafe)              { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindownoNotify(*m_w)); }
+// P2-DEDUP: noNotify covered by MainWindowCov3Test and MainWindowCov4Test
 
 TEST_F(MainWindowCov2Test, sendSavingNotifySafe)
 {
@@ -391,8 +368,7 @@ TEST_F(MainWindowCov2Test, forciblySavingNotifySafe)  { EXPECT_NO_FATAL_FAILURE(
 
 TEST_F(MainWindowCov2Test, onHelpSafe)                { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonHelp(*m_w)); }
 TEST_F(MainWindowCov2Test, onExitSafe)                { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonExit(*m_w)); }
-TEST_F(MainWindowCov2Test, onScreenResolutionChangedSafe) { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonScreenResolutionChanged(*m_w)); }
-TEST_F(MainWindowCov2Test, onExitScreenCaptureSafe)   { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonExitScreenCapture(*m_w)); }
+// P2-DEDUP: onScreenResolutionChanged/onExitScreenCapture covered by MainWindowCov4Test::publicSlotsSweep
 TEST_F(MainWindowCov2Test, exitScreenCuptureEventSafe){ EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowexitScreenCuptureEvent(*m_w)); }
 TEST_F(MainWindowCov2Test, exitAppSafe)               { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowexitApp(*m_w)); }
 
@@ -403,8 +379,7 @@ TEST_F(MainWindowCov2Test, reloadImageSafe)
 }
 
 TEST_F(MainWindowCov2Test, shotImgWidthEffectSafe)    { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowshotImgWidthEffect(*m_w)); }
-TEST_F(MainWindowCov2Test, compositeChangedSafe)      { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowcompositeChanged(*m_w)); }
-TEST_F(MainWindowCov2Test, responseEscSafe)           { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowresponseEsc(*m_w)); }
+// P2-DEDUP: compositeChanged/responseEsc covered by MainWindowCov4Test::publicSlotsSweep
 TEST_F(MainWindowCov2Test, tableRecordSetSafe)        { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowtableRecordSet(*m_w)); }
 TEST_F(MainWindowCov2Test, onActivateWindowSafe)      { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonActivateWindow(*m_w)); }
 TEST_F(MainWindowCov2Test, onViewShortcutSafe)        { EXPECT_NO_FATAL_FAILURE(call_private_fun::MainWindowonViewShortcut(*m_w)); }
