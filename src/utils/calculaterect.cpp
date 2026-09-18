@@ -266,7 +266,7 @@ qreal calculateAngle(QPointF point1, QPointF point2, QPointF point3)
     qreal b = std::pow(point2.x() - point3.x(), 2) + std::pow(point2.y() - point3.y(), 2);
     qreal c = std::pow(point1.x() - point2.x(), 2) + std::pow(point1.y() - point2.y(), 2);
 
-    qreal angle = std::cos((a + b - c) / (2 * std::sqrt(a) * std::sqrt(b)));
+    qreal angle = std::acos((a + b - c) / (2 * std::sqrt(a) * std::sqrt(b)));
     if (qIsNaN(angle)) {
         qCWarning(dsrApp) << "Invalid angle calculation result, returning 0.";
         return 0;
@@ -410,7 +410,8 @@ bool pointOnBezier(QPointF point1, QPointF point2, QPointF point3, QPointF point
 {
     qCDebug(dsrApp) << "Checking if point:" << pos << "is on Bezier curve defined by:" << point1 << point2 << point3 << point4;
     const int _MIN_PADDING = 10;
-    for (qreal t = 0; t <= 1; t = t + 0.1) {
+    for (int i = 0; i <= 10; i++) {
+        qreal t = i * 0.1;
         qreal bx = point1.x() * (1 - t) * std::pow(1 - t, 2) + 3 * point2.x() * t * std::pow(1 - t, 2)
                    + 3 * point3.x() * std::pow(t, 2) * (1 - t) + point4.x() * t * std::pow(t, 2);
         qreal by = point1.y() * (1 - t) * std::pow(1 - t, 2) + 3 * point2.y() * t * std::pow(1 - t, 2)

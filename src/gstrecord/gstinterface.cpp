@@ -66,8 +66,11 @@ QString gstInterface::libPath(const QString &sLib)
         qCDebug(dsrApp) << "Library list:" << list;
         list.sort();
     }
+    if (list.isEmpty()) {
+        qCWarning(dsrApp) << "No library found for:" << sLib;
+        return QString();
+    }
     qCDebug(dsrApp) << "Returning last library in sorted list:" << list.last();
-    //Q_ASSERT(list.size() > 0);
     return list.last();
 }
 void gstInterface::initFunctions()
@@ -118,6 +121,7 @@ void gstInterface::initFunctions()
 
     qCDebug(dsrApp) << "gstreamer-1.0 function is load";
 
+    m_isInitFunction = true;
 }
 
 void gstInterface::unloadFunctions()

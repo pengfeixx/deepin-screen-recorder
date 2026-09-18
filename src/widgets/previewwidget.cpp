@@ -134,7 +134,7 @@ void PreviewWidget::updateImage(const QImage &image)
         qCDebug(dsrApp) << "Image changed, scaling to preview dimensions";
         QImage tempImage = image.scaled(previewWidth, previewHeight, Qt::
                                         KeepAspectRatioByExpanding, Qt::SmoothTransformation);//以预览框的宽高等比例缩放
-        m_currentPix = image;
+        m_currentPix = tempImage;
     }
     update();
 }

@@ -310,8 +310,8 @@ void RecordProcess::recordVideo()
     qCDebug(dsrApp) << "Starting X11 FFmpeg video recording.";
     initProcess();
     //取系统音频的通道号
-    AudioUtils *audioUtils = new AudioUtils();
-    QString t_currentAudioChannel = audioUtils->currentAudioChannel();
+    AudioUtils audioUtils;
+    QString t_currentAudioChannel = audioUtils.currentAudioChannel();
     //-1表示系统音频的通道号错误
     if (t_currentAudioChannel == "-1") {
         qCWarning(dsrApp) << "Current system audio channel error!";
@@ -614,7 +614,7 @@ void RecordProcess::waylandRecord()
     qCDebug(dsrApp) << "wayland 录屏！";
     // 启动wayland录屏
     initProcess();
-    AudioUtils *audioUtils = new AudioUtils();
+    AudioUtils audioUtils;
     QStringList arguments;
     arguments << QString("%1").arg(m_recordType);
     arguments << QString("%1").arg(m_recordRect.width()) << QString("%1").arg(m_recordRect.height());
@@ -622,8 +622,8 @@ void RecordProcess::waylandRecord()
     arguments << QString("%1").arg(m_framerate);
     arguments << QString("%1").arg(savePath);
     arguments << QString("%1").arg(m_audioType);
-    arguments << QString(audioUtils->getDefaultDeviceName(AudioUtils::DefaultAudioType::Source));
-    arguments << QString(audioUtils->getDefaultDeviceName(AudioUtils::DefaultAudioType::Sink));
+    arguments << QString(audioUtils.getDefaultDeviceName(AudioUtils::DefaultAudioType::Source));
+    arguments << QString(audioUtils.getDefaultDeviceName(AudioUtils::DefaultAudioType::Sink));
     qCDebug(dsrApp) << arguments;
     WaylandIntegration::init(arguments);
 #endif
@@ -719,9 +719,9 @@ void RecordProcess::GstStartRecord()
     m_gstRecordX->setFramerate(m_framerate);
     m_gstRecordX->setRecordArea(m_recordRect);
     //这里设置音频设备名称（输入和输出），即使名称为空也不影响。
-    AudioUtils *audioUtils = new AudioUtils();
-    m_gstRecordX->setInputDeviceName(audioUtils->getDefaultDeviceName(AudioUtils::DefaultAudioType::Source));
-    m_gstRecordX->setOutputDeviceName(audioUtils->getDefaultDeviceName(AudioUtils::DefaultAudioType::Sink));
+    AudioUtils audioUtils;
+    m_gstRecordX->setInputDeviceName(audioUtils.getDefaultDeviceName(AudioUtils::DefaultAudioType::Source));
+    m_gstRecordX->setOutputDeviceName(audioUtils.getDefaultDeviceName(AudioUtils::DefaultAudioType::Sink));
     //这里才会设置究竟采集哪些音频设备的音频数据
     if (m_audioType == Utils::kMicAndSystemAudio) {
         audioType =  GstRecordX::AudioType::Mix;
