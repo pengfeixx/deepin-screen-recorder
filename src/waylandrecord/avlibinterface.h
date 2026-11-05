@@ -57,22 +57,22 @@ public:
     typedef unsigned (*p_av_int_list_length_for_size)(unsigned, const void *, uint64_t) av_pure;
 
 
-    typedef void (*p_avcodec_register_all)(void); //libavcodec
     typedef void (*p_av_init_packet)(AVPacket*);
-    typedef int (*p_avcodec_decode_audio4)(AVCodecContext*, AVFrame*, int*, const AVPacket*);
     typedef void (*p_av_packet_unref)(AVPacket*);
     typedef int (*p_avcodec_open2)(AVCodecContext *, const AVCodec *, AVDictionary **);
     typedef AVCodec *(*p_avcodec_find_decoder)(enum AVCodecID );
     typedef AVCodecContext *(*p_avcodec_alloc_context3)(const AVCodec *);
-    typedef int (*p_avcodec_encode_video2)(AVCodecContext *, AVPacket *, const AVFrame *, int *);
-    typedef void (*p_av_free_packet)(AVPacket *);
-    typedef int (*p_avcodec_encode_audio2)(AVCodecContext *, AVPacket *, const AVFrame *, int *);
+    typedef int (*p_avcodec_send_frame)(AVCodecContext *, const AVFrame *);
+    typedef int (*p_avcodec_receive_packet)(AVCodecContext *, AVPacket *);
+    typedef int (*p_avcodec_send_packet)(AVCodecContext *, const AVPacket *);
+    typedef int (*p_avcodec_receive_frame)(AVCodecContext *, AVFrame *);
+    typedef int (*p_avcodec_parameters_to_context)(AVCodecContext *, const AVCodecParameters *);
+    typedef void (*p_avcodec_free_context)(AVCodecContext **);
     typedef int (*p_avcodec_close)(AVCodecContext *);
     typedef AVCodec *(*p_avcodec_find_encoder)(enum AVCodecID id);
-    typedef int (*p_avpicture_get_size)(enum AVPixelFormat, int, int);
-    typedef int (*p_avpicture_fill)(AVPicture *, const uint8_t *, enum AVPixelFormat , int, int);
+    typedef int (*p_av_image_get_buffer_size)(enum AVPixelFormat, int, int, int);
+    typedef int (*p_av_image_fill_arrays)(uint8_t *dst_data[4], int dst_linesize[4], const uint8_t *, enum AVPixelFormat, int, int, int);
 
-    typedef void (*p_av_register_all)(void); // libavformat
     typedef  int (*p_av_read_frame)(AVFormatContext*, AVPacket*);
     typedef void (*p_avformat_close_input)(AVFormatContext**);
     typedef void (*p_avformat_free_context)(AVFormatContext*);
@@ -81,6 +81,7 @@ public:
     typedef int (*p_avformat_find_stream_info)(AVFormatContext *, AVDictionary **);
     typedef void (*p_av_dump_format)(AVFormatContext *, int, const char *, int);
     typedef AVStream *(*p_avformat_new_stream)(AVFormatContext *, const AVCodec *);
+    typedef int (*p_avcodec_parameters_from_context)(AVCodecParameters *, const AVCodecContext *);
     typedef int (*p_av_interleaved_write_frame)(AVFormatContext *, AVPacket *);
     typedef int (*p_av_write_trailer)(AVFormatContext *);
     typedef int (*p_avio_close)(AVIOContext *);
@@ -138,22 +139,22 @@ public:
     static p_av_int_list_length_for_size m_av_int_list_length_for_size;
 
 
-    static p_avcodec_register_all m_avcodec_register_all; //libavcodec
     static p_av_init_packet m_av_init_packet;
-    static p_avcodec_decode_audio4 m_avcodec_decode_audio4;
     static p_av_packet_unref m_av_packet_unref;
     static p_avcodec_open2 m_avcodec_open2;
     static p_avcodec_find_decoder m_avcodec_find_decoder;
     static p_avcodec_alloc_context3 m_avcodec_alloc_context3;
-    static p_avcodec_encode_video2 m_avcodec_encode_video2;
-    static p_av_free_packet m_av_free_packet;
-    static p_avcodec_encode_audio2 m_avcodec_encode_audio2;
+    static p_avcodec_send_frame m_avcodec_send_frame;
+    static p_avcodec_receive_packet m_avcodec_receive_packet;
+    static p_avcodec_send_packet m_avcodec_send_packet;
+    static p_avcodec_receive_frame m_avcodec_receive_frame;
+    static p_avcodec_parameters_to_context m_avcodec_parameters_to_context;
+    static p_avcodec_free_context m_avcodec_free_context;
     static p_avcodec_close m_avcodec_close;
     static p_avcodec_find_encoder m_avcodec_find_encoder;
-    static p_avpicture_get_size m_avpicture_get_size;
-    static p_avpicture_fill m_avpicture_fill;
+    static p_av_image_get_buffer_size m_av_image_get_buffer_size;
+    static p_av_image_fill_arrays m_av_image_fill_arrays;
 
-    static p_av_register_all m_av_register_all; // libavformat
     static p_av_read_frame m_av_read_frame;
     static p_avformat_close_input m_avformat_close_input;
     static p_avformat_free_context m_avformat_free_context;
@@ -162,6 +163,7 @@ public:
     static p_avformat_find_stream_info m_avformat_find_stream_info;
     static p_av_dump_format m_av_dump_format;
     static p_avformat_new_stream m_avformat_new_stream;
+    static p_avcodec_parameters_from_context m_avcodec_parameters_from_context;
     static p_av_interleaved_write_frame m_av_interleaved_write_frame;
     static p_av_write_trailer m_av_write_trailer;
     static p_avio_close m_avio_close;

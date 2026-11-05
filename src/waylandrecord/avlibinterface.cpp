@@ -35,22 +35,23 @@ avlibInterface::p_av_malloc avlibInterface::m_av_malloc = nullptr;
 avlibInterface::p_av_opt_set_bin avlibInterface::m_av_opt_set_bin = nullptr;
 avlibInterface::p_av_int_list_length_for_size avlibInterface::m_av_int_list_length_for_size = nullptr;
 
-avlibInterface::p_avcodec_register_all avlibInterface::m_avcodec_register_all = nullptr; //libavcodec
 avlibInterface::p_av_init_packet avlibInterface::m_av_init_packet = nullptr;
-avlibInterface::p_avcodec_decode_audio4 avlibInterface::m_avcodec_decode_audio4 = nullptr;
 avlibInterface::p_av_packet_unref avlibInterface::m_av_packet_unref = nullptr;
 avlibInterface::p_avcodec_open2 avlibInterface::m_avcodec_open2 = nullptr;
 avlibInterface::p_avcodec_find_decoder avlibInterface::m_avcodec_find_decoder = nullptr;
 avlibInterface::p_avcodec_alloc_context3 avlibInterface::m_avcodec_alloc_context3 = nullptr;
-avlibInterface::p_avcodec_encode_video2 avlibInterface::m_avcodec_encode_video2 = nullptr;
-avlibInterface::p_av_free_packet avlibInterface::m_av_free_packet = nullptr;
-avlibInterface::p_avcodec_encode_audio2 avlibInterface::m_avcodec_encode_audio2 = nullptr;
 avlibInterface::p_avcodec_close avlibInterface::m_avcodec_close = nullptr;
 avlibInterface::p_avcodec_find_encoder avlibInterface::m_avcodec_find_encoder = nullptr;
-avlibInterface::p_avpicture_get_size avlibInterface::m_avpicture_get_size = nullptr;
-avlibInterface::p_avpicture_fill avlibInterface::m_avpicture_fill = nullptr;
+avlibInterface::p_av_image_get_buffer_size avlibInterface::m_av_image_get_buffer_size = nullptr;
+avlibInterface::p_av_image_fill_arrays avlibInterface::m_av_image_fill_arrays = nullptr;
+avlibInterface::p_avcodec_parameters_from_context avlibInterface::m_avcodec_parameters_from_context = nullptr;avlibInterface::p_avcodec_send_frame avlibInterface::m_avcodec_send_frame = nullptr;
+avlibInterface::p_avcodec_receive_packet avlibInterface::m_avcodec_receive_packet = nullptr;
+avlibInterface::p_avcodec_send_packet avlibInterface::m_avcodec_send_packet = nullptr;
+avlibInterface::p_avcodec_receive_frame avlibInterface::m_avcodec_receive_frame = nullptr;
+avlibInterface::p_avcodec_parameters_to_context avlibInterface::m_avcodec_parameters_to_context = nullptr;
+avlibInterface::p_avcodec_free_context avlibInterface::m_avcodec_free_context = nullptr;
 
-avlibInterface::p_av_register_all avlibInterface::m_av_register_all = nullptr; // libavformat
+
 avlibInterface::p_av_read_frame avlibInterface::m_av_read_frame = nullptr;
 avlibInterface::p_avformat_close_input avlibInterface::m_avformat_close_input = nullptr;
 avlibInterface::p_avformat_free_context avlibInterface::m_avformat_free_context = nullptr;
@@ -173,22 +174,24 @@ void avlibInterface::initFunctions()
     m_av_int_list_length_for_size = reinterpret_cast<p_av_int_list_length_for_size>(m_libavutil.resolve("av_int_list_length_for_size"));
 
 
-    m_avcodec_register_all = reinterpret_cast<p_avcodec_register_all>(m_libavcodec.resolve("avcodec_register_all")); //libavcodec
     m_av_init_packet = reinterpret_cast<p_av_init_packet>(m_libavcodec.resolve("av_init_packet"));
-    m_avcodec_decode_audio4 = reinterpret_cast<p_avcodec_decode_audio4>(m_libavcodec.resolve("avcodec_decode_audio4"));
     m_av_packet_unref = reinterpret_cast<p_av_packet_unref>(m_libavcodec.resolve("av_packet_unref"));
     m_avcodec_open2 = reinterpret_cast<p_avcodec_open2>(m_libavcodec.resolve("avcodec_open2"));
     m_avcodec_find_decoder = reinterpret_cast<p_avcodec_find_decoder>(m_libavcodec.resolve("avcodec_find_decoder"));
     m_avcodec_alloc_context3 = reinterpret_cast<p_avcodec_alloc_context3>(m_libavcodec.resolve("avcodec_alloc_context3"));
-    m_avcodec_encode_video2 = reinterpret_cast<p_avcodec_encode_video2>(m_libavcodec.resolve("avcodec_encode_video2"));
-    m_av_free_packet = reinterpret_cast<p_av_free_packet>(m_libavcodec.resolve("av_free_packet"));
-    m_avcodec_encode_audio2 = reinterpret_cast<p_avcodec_encode_audio2>(m_libavcodec.resolve("avcodec_encode_audio2"));
     m_avcodec_close = reinterpret_cast<p_avcodec_close>(m_libavcodec.resolve("avcodec_close"));
     m_avcodec_find_encoder = reinterpret_cast<p_avcodec_find_encoder>(m_libavcodec.resolve("avcodec_find_encoder"));
-    m_avpicture_get_size = reinterpret_cast<p_avpicture_get_size>(m_libavcodec.resolve("avpicture_get_size"));
-    m_avpicture_fill = reinterpret_cast<p_avpicture_fill>(m_libavcodec.resolve("avpicture_fill"));
+    m_av_image_get_buffer_size = reinterpret_cast<p_av_image_get_buffer_size>(m_libavutil.resolve("av_image_get_buffer_size"));
+    m_av_image_fill_arrays = reinterpret_cast<p_av_image_fill_arrays>(m_libavutil.resolve("av_image_fill_arrays"));
+    m_avcodec_parameters_from_context = reinterpret_cast<p_avcodec_parameters_from_context>(m_libavcodec.resolve("avcodec_parameters_from_context"));
+m_avcodec_send_frame = reinterpret_cast<p_avcodec_send_frame>(m_libavcodec.resolve("avcodec_send_frame"));
+m_avcodec_receive_packet = reinterpret_cast<p_avcodec_receive_packet>(m_libavcodec.resolve("avcodec_receive_packet"));
+m_avcodec_send_packet = reinterpret_cast<p_avcodec_send_packet>(m_libavcodec.resolve("avcodec_send_packet"));
+m_avcodec_receive_frame = reinterpret_cast<p_avcodec_receive_frame>(m_libavcodec.resolve("avcodec_receive_frame"));
+m_avcodec_parameters_to_context = reinterpret_cast<p_avcodec_parameters_to_context>(m_libavcodec.resolve("avcodec_parameters_to_context"));
+m_avcodec_free_context = reinterpret_cast<p_avcodec_free_context>(m_libavcodec.resolve("avcodec_free_context"));
 
-    m_av_register_all = reinterpret_cast<p_av_register_all>(m_libavformat.resolve("av_register_all")); // libavformat
+
     m_av_read_frame = reinterpret_cast<p_av_read_frame>(m_libavformat.resolve("av_read_frame"));
     m_avformat_close_input = reinterpret_cast<p_avformat_close_input>(m_libavformat.resolve("avformat_close_input"));
     m_avformat_free_context = reinterpret_cast<p_avformat_free_context>(m_libavformat.resolve("avformat_free_context"));

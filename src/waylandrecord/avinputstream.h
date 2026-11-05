@@ -62,8 +62,12 @@ public:
     int m_screenDH; //输入图像高
     //麦克风音频上下文
     AVFormatContext *m_pMicAudioFormatContext;
+    //麦克风音频解码上下文（ffmpeg 6: AVStream::codec 已移除，需自建）
+    AVCodecContext *m_pMicDecodeCtx = nullptr;
     //系统声卡音频上下文
     AVFormatContext *m_pSysAudioFormatContext;
+    //系统声卡音频解码上下文（ffmpeg 6: AVStream::codec 已移除，需自建）
+    AVCodecContext *m_pSysDecodeCtx = nullptr;
     /**
      * @brief m_pAudioInputFormat 麦克风音频输入格式
      */

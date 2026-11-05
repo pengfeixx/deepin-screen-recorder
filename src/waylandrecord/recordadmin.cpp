@@ -42,8 +42,7 @@ RecordAdmin::RecordAdmin(QStringList list, WaylandIntegration::WaylandIntegratio
     }
     m_pInputStream  = new CAVInputStream(context);
     m_pOutputStream = new CAVOutputStream(context);
-    avlibInterface::m_avcodec_register_all();
-    avlibInterface::m_av_register_all();
+    // av_register_all/avcodec_register_all 已在 ffmpeg 4+ 成为空操作并于 5/6 移除
     avlibInterface::m_avdevice_register_all();
     m_writeFrameThread = new WriteFrameThread(context);
 }

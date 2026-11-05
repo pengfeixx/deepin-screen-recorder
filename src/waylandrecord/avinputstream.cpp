@@ -109,7 +109,7 @@ bool CAVInputStream::openMicStream()
         }
         m_micAudioindex = -1;
         for (int i = 0; i < static_cast<int>(m_pMicAudioFormatContext->nb_streams); i++) {
-            if (m_pMicAudioFormatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+            if (m_pMicAudioFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
                 m_micAudioindex = i;
                 break;
             }
@@ -118,7 +118,11 @@ bool CAVInputStream::openMicStream()
             qWarning() << "Couldn't find a audio stream.（没有找到音频流）\n";
             return false;
         }
-        if (avlibInterface::m_avcodec_open2(m_pMicAudioFormatContext->streams[m_micAudioindex]->codec, avlibInterface::m_avcodec_find_decoder(m_pMicAudioFormatContext->streams[m_micAudioindex]->codec->codec_id), nullptr) < 0) {
+        const AVCodec *micDec = avlibInterface::m_avcodec_find_decoder(m_pMicAudioFormatContext->streams[m_micAudioindex]->codecpar->codec_id);
+        m_pMicDecodeCtx = avlibInterface::m_avcodec_alloc_context3(micDec);
+        if (!m_pMicDecodeCtx
+                || avlibInterface::m_avcodec_parameters_to_context(m_pMicDecodeCtx, m_pMicAudioFormatContext->streams[m_micAudioindex]->codecpar) < 0
+                || avlibInterface::m_avcodec_open2(m_pMicDecodeCtx, micDec, nullptr) < 0) {
             qWarning() << "Could not open audio codec.（无法打开解码器）\n";
             return false;
         }
@@ -152,7 +156,7 @@ bool CAVInputStream::openSysStream()
         fflush(stdout);
         m_sysAudioindex = -1;
         for (int i = 0; i < static_cast<int>(m_pSysAudioFormatContext->nb_streams); i++) {
-            if (m_pSysAudioFormatContext->streams[i]->codec->codec_type == AVMEDIA_TYPE_AUDIO) {
+            if (m_pSysAudioFormatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
                 m_sysAudioindex = i;
                 break;
             }
@@ -162,7 +166,11 @@ bool CAVInputStream::openSysStream()
             return false;
         }
         ///Caution, m_pAudFmtCtx->streams[m_audioindex]->codec->codec_id =14, AV_CODEC_ID_RAWVIDEO
-        if (avlibInterface::m_avcodec_open2(m_pSysAudioFormatContext->streams[m_sysAudioindex]->codec, avlibInterface::m_avcodec_find_decoder(m_pSysAudioFormatContext->streams[m_sysAudioindex]->codec->codec_id), nullptr) < 0) {
+        const AVCodec *sysDec = avlibInterface::m_avcodec_find_decoder(m_pSysAudioFormatContext->streams[m_sysAudioindex]->codecpar->codec_id);
+        m_pSysDecodeCtx = avlibInterface::m_avcodec_alloc_context3(sysDec);
+        if (!m_pSysDecodeCtx
+                || avlibInterface::m_avcodec_parameters_to_context(m_pSysDecodeCtx, m_pSysAudioFormatContext->streams[m_sysAudioindex]->codecpar) < 0
+                || avlibInterface::m_avcodec_open2(m_pSysDecodeCtx, sysDec, nullptr) < 0) {
             qWarning() << "Could not open audio codec.（无法打开解码器）\n";
             return false;
         }
@@ -376,7 +384,17 @@ int CAVInputStream::readMicAudioPacket()
             }
         }
         //AVPacket -> AVFrame
-        if ((ret = avlibInterface::m_avcodec_decode_audio4(m_pMicAudioFormatContext->streams[m_micAudioindex]->codec, inputFrame, &got_frame_ptr, &inputPacket)) < 0) {
+        ret = avlibInterface::m_avcodec_send_packet(m_pMicDecodeCtx, &inputPacket);
+        if (ret >= 0) {
+            ret = avlibInterface::m_avcodec_receive_frame(m_pMicDecodeCtx, inputFrame);
+            if (ret >= 0) {
+                got_frame_ptr = 1;
+            } else if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+                got_frame_ptr = 0;
+                ret = 0;
+            }
+        }
+        if (ret < 0) {
             printf("Could not decode audio frame\n");
             return ret;
         }
@@ -389,6 +407,9 @@ int CAVInputStream::readMicAudioPacket()
         fflush(stdout);
     }// -- while end
     if (nullptr != m_pMicAudioFormatContext) {
+        if (m_pMicDecodeCtx) {
+            avlibInterface::m_avcodec_free_context(&m_pMicDecodeCtx);
+        }
         avlibInterface::m_avformat_close_input(&m_pMicAudioFormatContext);
     }
     if (nullptr != m_pMicAudioFormatContext) {
@@ -424,7 +445,17 @@ int CAVInputStream::readMicToMixAudioPacket()
             }
         }
         //AVPacket -> AVFrame
-        if ((ret = avlibInterface::m_avcodec_decode_audio4(m_pMicAudioFormatContext->streams[m_micAudioindex]->codec, inputFrame, &got_frame_ptr, &inputPacket)) < 0) {
+        ret = avlibInterface::m_avcodec_send_packet(m_pMicDecodeCtx, &inputPacket);
+        if (ret >= 0) {
+            ret = avlibInterface::m_avcodec_receive_frame(m_pMicDecodeCtx, inputFrame);
+            if (ret >= 0) {
+                got_frame_ptr = 1;
+            } else if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+                got_frame_ptr = 0;
+                ret = 0;
+            }
+        }
+        if (ret < 0) {
             printf("Could not decode audio frame\n");
             return ret;
         }
@@ -437,6 +468,9 @@ int CAVInputStream::readMicToMixAudioPacket()
         fflush(stdout);
     }// -- while end
     if (nullptr != m_pMicAudioFormatContext) {
+        if (m_pMicDecodeCtx) {
+            avlibInterface::m_avcodec_free_context(&m_pMicDecodeCtx);
+        }
         avlibInterface::m_avformat_close_input(&m_pMicAudioFormatContext);
     }
     if (nullptr != m_pMicAudioFormatContext) {
@@ -487,7 +521,17 @@ int CAVInputStream::readSysAudioPacket()
                 continue;
             }
         }
-        if ((ret = avlibInterface::m_avcodec_decode_audio4(m_pSysAudioFormatContext->streams[m_sysAudioindex]->codec, input_frame, &got_frame_ptr, &inputPacket)) < 0) {
+        ret = avlibInterface::m_avcodec_send_packet(m_pSysDecodeCtx, &inputPacket);
+        if (ret >= 0) {
+            ret = avlibInterface::m_avcodec_receive_frame(m_pSysDecodeCtx, input_frame);
+            if (ret >= 0) {
+                got_frame_ptr = 1;
+            } else if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+                got_frame_ptr = 0;
+                ret = 0;
+            }
+        }
+        if (ret < 0) {
             printf("Could not decode audio frame\n");
             return ret;
         }
@@ -499,6 +543,9 @@ int CAVInputStream::readSysAudioPacket()
         avlibInterface::m_av_frame_free(&input_frame);
     }// -- while end
     if (nullptr != m_pSysAudioFormatContext) {
+        if (m_pSysDecodeCtx) {
+            avlibInterface::m_avcodec_free_context(&m_pSysDecodeCtx);
+        }
         avlibInterface::m_avformat_close_input(&m_pSysAudioFormatContext);
     }
     if (nullptr != m_pSysAudioFormatContext) {
@@ -531,7 +578,17 @@ int CAVInputStream::readSysToMixAudioPacket()
                 continue;
             }
         }
-        if ((ret = avlibInterface::m_avcodec_decode_audio4(m_pSysAudioFormatContext->streams[m_sysAudioindex]->codec, inputFrame, &got_frame_ptr, &inputPacket)) < 0) {
+        ret = avlibInterface::m_avcodec_send_packet(m_pSysDecodeCtx, &inputPacket);
+        if (ret >= 0) {
+            ret = avlibInterface::m_avcodec_receive_frame(m_pSysDecodeCtx, inputFrame);
+            if (ret >= 0) {
+                got_frame_ptr = 1;
+            } else if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+                got_frame_ptr = 0;
+                ret = 0;
+            }
+        }
+        if (ret < 0) {
             printf("Could not decode audio frame\n");
             return ret;
         }
@@ -542,6 +599,9 @@ int CAVInputStream::readSysToMixAudioPacket()
         avlibInterface::m_av_frame_free(&inputFrame);
     }// -- while end
     if (nullptr != m_pSysAudioFormatContext) {
+        if (m_pSysDecodeCtx) {
+            avlibInterface::m_avcodec_free_context(&m_pSysDecodeCtx);
+        }
         avlibInterface::m_avformat_close_input(&m_pSysAudioFormatContext);
     }
     if (nullptr != m_pSysAudioFormatContext) {
@@ -564,10 +624,10 @@ bool CAVInputStream::GetVideoInputInfo(int &width, int &height, int &frame_rate,
 bool  CAVInputStream::GetAudioInputInfo(AVSampleFormat &sample_fmt, int &sample_rate, int &channels, int &layout)
 {
     if (m_micAudioindex != -1) {
-        sample_fmt = m_pMicAudioFormatContext->streams[m_micAudioindex]->codec->sample_fmt;
-        sample_rate = m_pMicAudioFormatContext->streams[m_micAudioindex]->codec->sample_rate;
-        channels = m_pMicAudioFormatContext->streams[m_micAudioindex]->codec->channels;
-        layout = static_cast<int>(m_pMicAudioFormatContext->streams[m_micAudioindex]->codec->channel_layout);
+        sample_fmt = static_cast<AVSampleFormat>(m_pMicAudioFormatContext->streams[m_micAudioindex]->codecpar->format);
+        sample_rate = m_pMicAudioFormatContext->streams[m_micAudioindex]->codecpar->sample_rate;
+        channels = m_pMicAudioFormatContext->streams[m_micAudioindex]->codecpar->channels;
+        layout = static_cast<int>(m_pMicAudioFormatContext->streams[m_micAudioindex]->codecpar->channel_layout);
         return true;
     }
 
@@ -576,10 +636,10 @@ bool  CAVInputStream::GetAudioInputInfo(AVSampleFormat &sample_fmt, int &sample_
 bool  CAVInputStream::GetAudioSCardInputInfo(AVSampleFormat &sample_fmt, int &sample_rate, int &channels, int &layout)
 {
     if (m_sysAudioindex != -1) {
-        sample_fmt = m_pSysAudioFormatContext->streams[m_sysAudioindex]->codec->sample_fmt;
-        sample_rate = m_pSysAudioFormatContext->streams[m_sysAudioindex]->codec->sample_rate;
-        channels = m_pSysAudioFormatContext->streams[m_sysAudioindex]->codec->channels;
-        layout = static_cast<int>(m_pSysAudioFormatContext->streams[m_sysAudioindex]->codec->channel_layout);
+        sample_fmt = static_cast<AVSampleFormat>(m_pSysAudioFormatContext->streams[m_sysAudioindex]->codecpar->format);
+        sample_rate = m_pSysAudioFormatContext->streams[m_sysAudioindex]->codecpar->sample_rate;
+        channels = m_pSysAudioFormatContext->streams[m_sysAudioindex]->codecpar->channels;
+        layout = static_cast<int>(m_pSysAudioFormatContext->streams[m_sysAudioindex]->codecpar->channel_layout);
         return true;
     }
     return false;
